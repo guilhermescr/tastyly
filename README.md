@@ -58,7 +58,7 @@ Before you start, make sure you have the following installed:
 5. Run the app:
 
    ```bash
-   expo start
+   npx expo start
    ```
 
 Now you're all set! Open the app and start exploring the world of recipes. 🍳
