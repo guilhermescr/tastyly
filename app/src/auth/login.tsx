@@ -1,13 +1,52 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { AntDesign, FontAwesome } from '@expo/vector-icons'; // Added FontAwesome for icons
+import { AntDesign, FontAwesome } from '@expo/vector-icons';
 import EmailInput from '@/components/emailInput/EmailInput';
 import PasswordInput from '@/components/passwordInput/PasswordInput';
 import PrimaryButton from '@/components/primaryButton/PrimaryButton';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/firebaseConfig';
+import { User } from 'firebase/auth';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [authUser, setAuthUser] = useState<User>(null);
+
+  const signIn = async () => {
+    const response = await signInWithEmailAndPassword(auth, email, password);
+    setAuthUser(response.user);
+  };
+
+  const handleSignIn = () => {
+    let valid = true;
+
+    if (!email) {
+      setEmailError('Email is required.');
+      valid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError('Please enter a valid email address.');
+      valid = false;
+    } else {
+      setEmailError('');
+    }
+
+    if (!password) {
+      setPasswordError('Password is required.');
+      valid = false;
+    } else if (password.length < 8) {
+      setPasswordError('Password must be at least 8 characters long.');
+      valid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    if (valid) {
+      signIn();
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -21,13 +60,25 @@ export default function LoginPage() {
           </Text>
         </View>
 
-        <EmailInput email={email} setEmail={setEmail} />
+        <EmailInput
+          email={email}
+          setEmail={setEmail}
+          onChangeText={() => setEmailError('')}
+        />
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
-        <PasswordInput password={password} setPassword={setPassword} />
+        <PasswordInput
+          password={password}
+          setPassword={setPassword}
+          onChangeText={() => setPasswordError('')}
+        />
+        {passwordError ? (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        ) : null}
 
         <PrimaryButton
           label="Sign in"
-          onPress={() => console.log('Sign in')}
+          onPress={handleSignIn}
           icon={
             <View style={{ paddingTop: 2 }}>
               <AntDesign name="right" size={14} color="#fff" />
@@ -99,6 +150,10 @@ const styles = StyleSheet.create({
   },
   formSubtitle: {
     color: '#666',
+  },
+  errorText: {
+    color: '#FF0000',
+    marginTop: -10,
   },
   orWrapper: {
     position: 'relative',

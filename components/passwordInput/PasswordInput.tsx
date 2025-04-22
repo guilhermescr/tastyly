@@ -11,9 +11,14 @@ import { Feather } from '@expo/vector-icons';
 type Props = {
   password: string;
   setPassword: (value: string) => void;
+  onChangeText?: (value: string) => void;
 };
 
-export default function PasswordInput({ password, setPassword }: Props) {
+export default function PasswordInput({
+  password,
+  setPassword,
+  onChangeText,
+}: Props) {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
   return (
@@ -27,7 +32,13 @@ export default function PasswordInput({ password, setPassword }: Props) {
           placeholder="••••••••"
           secureTextEntry={!isPasswordVisible}
           value={password}
-          onChangeText={setPassword}
+          onChangeText={(value) => {
+            setPassword(value);
+
+            if (onChangeText) {
+              onChangeText(value);
+            }
+          }}
         />
 
         <TouchableOpacity

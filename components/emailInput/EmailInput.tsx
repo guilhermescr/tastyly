@@ -5,9 +5,10 @@ import { Feather } from '@expo/vector-icons';
 type Props = {
   email: string;
   setEmail: (value: string) => void;
+  onChangeText?: (value: string) => void;
 };
 
-export default function EmailInput({ email, setEmail }: Props) {
+export default function EmailInput({ email, setEmail, onChangeText }: Props) {
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.label}>Email</Text>
@@ -19,7 +20,13 @@ export default function EmailInput({ email, setEmail }: Props) {
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(value) => {
+            setEmail(value);
+
+            if (onChangeText) {
+              onChangeText(value);
+            }
+          }}
         />
       </View>
     </View>
